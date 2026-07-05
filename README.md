@@ -26,19 +26,26 @@ new colors/spacing/components ad hoc.
 Web App acting as a JSON API. See [Hosting on GitHub Pages](#hosting-on-github-pages) and
 [Google Sheets backend](#google-sheets-backend) below.
 
-## Branding note
+## Branding
 
-`bestcastgroup.com` could not be reached from the build environment (network egress policy
-blocked the host), so the real logo and brand colors could not be extracted automatically.
-The app ships with:
+`bestcastgroup.com` couldn't be reached from the build environment (network egress policy),
+so the real logo/colors were supplied directly instead. The default theme (`bestcast-light` /
+`bestcast-dark` in `src/styles/themes.css`) is extracted pixel-for-pixel from the real logo:
+navy `#09025E`, teal `#177562`, orange `#E68440`. Four supplementary palettes (ocean, midnight,
+emerald, high-contrast) round out the theme picker.
 
-- An industrial teal/graphite placeholder palette (`clinical-light` / `clinical-dark` themes
-  in `src/styles/themes.css`), plus 4 alternate themes (ocean, midnight, emerald, high-contrast).
-- A text-based "BEST CAST" wordmark (`src/components/layout/Logo.tsx`).
+- `public/logo.png` - full logo lockup (icon + "BEST CAST" wordmark), used on the Settings page.
+- `public/logo-mark.png` - the icon alone, used in the sidebar/favicon. The sidebar's "BEST
+  CAST" text is rendered as real (theme-aware) text, not part of the image - the logo file's
+  wordmark is fixed dark-navy pixels, which would be illegible on the dark theme.
+- `public/favicon.png` - generated from the icon mark.
 
 Every color in the app is a semantic CSS-variable token (`bg-primary`, `text-muted`, ...), so
-swapping in the real brand palette is a one-file edit to `src/styles/themes.css`, and swapping
-the logo is a one-file edit to `Logo.tsx` - no other component needs to change.
+retuning the palette further is a one-file edit to `src/styles/themes.css`.
+
+Full company profile (legal/brand name, HQ, leadership, applicable standards - ISO 9001:2015 /
+IATF 16949:2016 - core methodologies and industries served) lives in `src/data/company.ts` and
+is displayed on the Settings page.
 
 ## Running locally
 
@@ -126,6 +133,12 @@ backend **without a rebuild or redeploy**:
 These overrides are stored in `localStorage` (`src/lib/runtimeConfig.ts`) and take priority
 over the build-time env var; `src/lib/sheetsClient.ts` resolves the effective URL/tab
 name/spreadsheet ID on every request.
+
+## Hard refresh
+
+The topbar has a refresh icon (`src/components/layout/HardRefreshButton.tsx`) next to the
+theme menu that clears any Cache Storage entries and reloads - useful right after a new GitHub
+Pages deploy if the browser is showing a stale build.
 
 ## Responsive design
 

@@ -4,26 +4,24 @@
  * rgb(var(--x) / <alpha>) opacity utilities work. Switch by setting
  * <html data-theme="...">.
  *
- * NOTE: bestcastgroup.com could not be reached from this environment's
- * network egress policy to extract the live brand palette, so
- * "clinical-light" / "clinical-dark" below use an industrial teal/graphite
- * placeholder appropriate for a foundry/die-casting QMS. Swap the values
- * below with the real brand hex codes whenever they're available -
- * every other part of the app only ever references the semantic token
- * names (bg, surface, primary, ...), never a raw color.
+ * "bestcast-light" / "bestcast-dark" are extracted from the real Best Cast
+ * Group logo: navy #09025E, teal #177562, orange #E68440. Primary/accent
+ * carry the brand; success/warning/danger/info stay semantic (universal
+ * meaning) rather than brand-tied. The remaining palettes (ocean, midnight,
+ * emerald, contrast) are supplementary options in the theme picker.
  */
 
 :root,
-[data-theme='clinical-light'] {
-  --c-bg: 241 245 249;
+[data-theme='bestcast-light'] {
+  --c-bg: 244 246 250;
   --c-surface: 255 255 255;
-  --c-surface-2: 248 250 252;
-  --c-border: 226 232 240;
-  --c-text: 15 23 42;
-  --c-muted: 100 116 139;
-  --c-primary: 13 148 136;
+  --c-surface-2: 236 239 246;
+  --c-border: 222 226 238;
+  --c-text: 9 2 94;
+  --c-muted: 95 92 140;
+  --c-primary: 23 117 98;
   --c-primary-fg: 255 255 255;
-  --c-accent: 14 116 144;
+  --c-accent: 230 132 64;
   --c-success: 22 163 74;
   --c-warning: 217 119 6;
   --c-danger: 220 38 38;
@@ -31,20 +29,20 @@
   color-scheme: light;
 }
 
-[data-theme='clinical-dark'] {
-  --c-bg: 2 6 23;
-  --c-surface: 15 23 42;
-  --c-surface-2: 30 41 59;
-  --c-border: 51 65 85;
-  --c-text: 226 232 240;
-  --c-muted: 148 163 184;
-  --c-primary: 45 212 191;
-  --c-primary-fg: 4 47 46;
-  --c-accent: 34 211 238;
+[data-theme='bestcast-dark'] {
+  --c-bg: 6 5 26;
+  --c-surface: 14 12 42;
+  --c-surface-2: 23 20 62;
+  --c-border: 45 41 92;
+  --c-text: 228 227 245;
+  --c-muted: 156 153 196;
+  --c-primary: 45 189 158;
+  --c-primary-fg: 5 32 27;
+  --c-accent: 240 155 90;
   --c-success: 74 222 128;
   --c-warning: 251 191 36;
   --c-danger: 248 113 113;
-  --c-info: 56 189 248;
+  --c-info: 96 179 250;
   color-scheme: dark;
 }
 

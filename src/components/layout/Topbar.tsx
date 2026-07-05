@@ -1,5 +1,6 @@
 import { Menu } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
+import { HardRefreshButton } from './HardRefreshButton'
 import { NAV } from './nav'
 import { ThemeMenu } from './ThemeMenu'
 import { UserChip } from './UserChip'
@@ -34,6 +35,7 @@ export function Topbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
         </div>
       </div>
       <div className="flex items-center gap-2 md:gap-3">
+        <HardRefreshButton />
         <ThemeMenu />
         <div className="h-6 w-px bg-border" />
         <UserChip />

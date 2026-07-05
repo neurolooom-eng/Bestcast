@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
-export type ThemeId = 'clinical-light' | 'clinical-dark' | 'ocean' | 'midnight' | 'emerald' | 'contrast'
+export type ThemeId = 'bestcast-light' | 'bestcast-dark' | 'ocean' | 'midnight' | 'emerald' | 'contrast'
 
 export interface ThemeOption {
   id: ThemeId
@@ -10,8 +10,8 @@ export interface ThemeOption {
 }
 
 export const THEMES: ThemeOption[] = [
-  { id: 'clinical-light', label: 'Clinical Light', mode: 'light', swatch: '#0d9488' },
-  { id: 'clinical-dark', label: 'Clinical Dark', mode: 'dark', swatch: '#2dd4bf' },
+  { id: 'bestcast-light', label: 'Best Cast Light', mode: 'light', swatch: '#177562' },
+  { id: 'bestcast-dark', label: 'Best Cast Dark', mode: 'dark', swatch: '#2dbd9e' },
   { id: 'ocean', label: 'Ocean', mode: 'light', swatch: '#0284c7' },
   { id: 'midnight', label: 'Midnight', mode: 'dark', swatch: '#818cf8' },
   { id: 'emerald', label: 'Emerald', mode: 'light', swatch: '#059669' },
@@ -19,7 +19,7 @@ export const THEMES: ThemeOption[] = [
 ]
 
 const STORAGE_KEY = 'bestcast.ui.theme'
-const DEFAULT_THEME: ThemeId = 'clinical-light'
+const DEFAULT_THEME: ThemeId = 'bestcast-light'
 
 interface ThemeContextValue {
   theme: ThemeId
