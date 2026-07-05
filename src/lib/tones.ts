@@ -4,7 +4,6 @@ import type { CheckSheetStatus, DocumentStatus, OkNotOk } from '../types/domain'
 export const checkSheetStatusTone: Record<CheckSheetStatus, Tone> = {
   draft: 'neutral',
   submitted: 'info',
-  reviewed: 'warning',
   approved: 'success',
 }
 

@@ -26,6 +26,7 @@ interface DataTableProps<T> {
   columns: DataColumn<T>[]
   data: T[]
   rowsBeforeScroll?: number
+  onRowClick?: (row: T) => void
 }
 
 const ROW_HEIGHT = { comfortable: 52, compact: 38 } as const
@@ -35,6 +36,7 @@ export function DataTable<T extends { id: string | number }>({
   columns,
   data,
   rowsBeforeScroll = 12,
+  onRowClick,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -224,7 +226,12 @@ export function DataTable<T extends { id: string | number }>({
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-surface-2" style={{ height: rowHeight }}>
+              <tr
+                key={row.id}
+                onClick={() => onRowClick?.(row.original)}
+                className={cn('hover:bg-surface-2', onRowClick && 'cursor-pointer')}
+                style={{ height: rowHeight }}
+              >
                 {row.getVisibleCells().map((cell) => {
                   const col = orderedColumns.find((c) => c.key === cell.column.id)
                   if (!col || hidden.has(col.key)) return null

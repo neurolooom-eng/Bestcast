@@ -1,9 +1,11 @@
 import { Plus, Trash2 } from 'lucide-react'
-import { CHECK_SHEET_STATUS_OPTIONS, FURNACE_OPTIONS, LINE_OPTIONS, OK_NOT_OK_OPTIONS, SHIFT_OPTIONS, SUPERVISOR_OPTIONS, YES_NO_OPTIONS } from '../../data/options'
+import { FURNACE_OPTIONS, LINE_OPTIONS, OK_NOT_OK_OPTIONS, SHIFT_OPTIONS, SUPERVISOR_OPTIONS, YES_NO_OPTIONS } from '../../data/options'
 import { cn } from '../../lib/cn'
+import { checkSheetStatusTone } from '../../lib/tones'
 import type { CheckSheetRecord, MachineReading, OkNotOk, ShiftReading } from '../../types/domain'
 import { Button } from '../ui/Button'
 import { FormField } from '../ui/FormField'
+import { StatusChip } from '../ui/StatusChip'
 import { emptyMachineReading, emptyReading } from './emptyCheckSheet'
 
 interface Props {
@@ -124,7 +126,11 @@ export function CheckSheetForm({ record, onChange, readOnly }: Props) {
         <FormField label="Degassing Gas" value={record.degassingGas} readOnly={readOnly} onChange={(v) => onChange({ ...record, degassingGas: String(v) })} />
         <FormField label="Best Cast Alloy" type="select" value={record.bestCastAlloy} options={YES_NO_OPTIONS} readOnly={readOnly} onChange={(v) => onChange({ ...record, bestCastAlloy: v as CheckSheetRecord['bestCastAlloy'] })} />
         <FormField label="Other Alloy" type="select" value={record.otherAlloy} options={YES_NO_OPTIONS} readOnly={readOnly} onChange={(v) => onChange({ ...record, otherAlloy: v as CheckSheetRecord['otherAlloy'] })} />
-        <FormField label="Record Status" type="status" value={record.status} options={CHECK_SHEET_STATUS_OPTIONS} readOnly={readOnly} onChange={(v) => onChange({ ...record, status: v as CheckSheetRecord['status'] })} />
+        <div>
+          <p className="label">Record Status</p>
+          <StatusChip value={record.status} tone={checkSheetStatusTone[record.status]} />
+          <p className="mt-0.5 text-[11px] text-muted">Changes only via the Send for Review / Approve actions below.</p>
+        </div>
       </fieldset>
 
       <fieldset className="card p-4">

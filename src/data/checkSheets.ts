@@ -65,12 +65,12 @@ interface Seed {
 
 const SEEDS: Seed[] = [
   { line: 'MANDO-01', date: '2026-07-05', shift: '1st', furnaceNo: 'HF1', status: 'approved', operatorSign: 'Ravi Kumar', shiftSupervisorSign: 'Vimal', bcNo: '716/697', mcNo: '5' },
-  { line: 'MANDO-01', date: '2026-07-05', shift: '2nd', furnaceNo: 'HF1', status: 'reviewed', operatorSign: 'Suresh M', shiftSupervisorSign: 'Bharathi', bcNo: '702/689', mcNo: '5' },
+  { line: 'MANDO-01', date: '2026-07-05', shift: '2nd', furnaceNo: 'HF1', status: 'submitted', operatorSign: 'Suresh M', shiftSupervisorSign: 'Bharathi', bcNo: '702/689', mcNo: '5' },
   { line: 'MANDO-01', date: '2026-07-05', shift: '3rd', furnaceNo: 'HF2', status: 'submitted', operatorSign: 'Ganesan P', shiftSupervisorSign: 'Mohan', bcNo: '710/695', mcNo: '5' },
   { line: 'MANDO-02', date: '2026-07-04', shift: '1st', furnaceNo: 'HF3', status: 'approved', operatorSign: 'Karthik S', shiftSupervisorSign: 'Naveen', bcNo: '655/640', mcNo: '9' },
   { line: 'MANDO-02', date: '2026-07-04', shift: '2nd', furnaceNo: 'HF3', status: 'approved', operatorSign: 'Manoj R', shiftSupervisorSign: 'Ashok', bcNo: '661/648', mcNo: '9' },
   { line: 'MANDO-03', date: '2026-07-04', shift: '1st', furnaceNo: 'HF5', status: 'draft', operatorSign: 'Vignesh T', shiftSupervisorSign: 'Vimal', bcNo: '588/571', mcNo: '12' },
-  { line: 'MANDO-06', date: '2026-07-03', shift: '3rd', furnaceNo: 'HF11', status: 'reviewed', operatorSign: 'Arun D', shiftSupervisorSign: 'Bharathi', bcNo: '744/730', mcNo: '2' },
+  { line: 'MANDO-06', date: '2026-07-03', shift: '3rd', furnaceNo: 'HF11', status: 'submitted', operatorSign: 'Arun D', shiftSupervisorSign: 'Bharathi', bcNo: '744/730', mcNo: '2' },
   { line: 'MANDO-01', date: '2026-07-02', shift: '1st', furnaceNo: 'HF1', status: 'approved', operatorSign: 'Ravi Kumar', shiftSupervisorSign: 'Mohan', bcNo: '699/682', mcNo: '5' },
 ]
 

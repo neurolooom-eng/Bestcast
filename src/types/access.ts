@@ -7,6 +7,7 @@ export type Permission =
   | 'specifications:edit'
   | 'checksheets:view'
   | 'checksheets:create'
+  | 'checksheets:edit'
   | 'checksheets:approve'
   | 'admin:access'
   | 'config:access'

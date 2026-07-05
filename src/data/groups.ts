@@ -9,6 +9,7 @@ const ALL_PERMISSIONS: Permission[] = [
   'specifications:edit',
   'checksheets:view',
   'checksheets:create',
+  'checksheets:edit',
   'checksheets:approve',
   'admin:access',
   'config:access',
@@ -30,7 +31,7 @@ export const GROUPS: Group[] = [
   {
     id: 'group-quality-manager',
     name: 'Quality Manager',
-    description: 'Owns QMS documents and specifications, reviews production line records.',
+    description: 'Owns QMS documents and specifications, gives final approval on production line records.',
     permissions: [
       'dashboard:view',
       'documents:view',
@@ -45,13 +46,20 @@ export const GROUPS: Group[] = [
   {
     id: 'group-shift-supervisor',
     name: 'Shift Supervisor',
-    description: 'Records and reviews process check sheets on the floor.',
-    permissions: ['dashboard:view', 'documents:view', 'specifications:view', 'checksheets:view', 'checksheets:create'],
+    description: 'Line supervisor - starts check sheets and edits them while a shift is in review.',
+    permissions: [
+      'dashboard:view',
+      'documents:view',
+      'specifications:view',
+      'checksheets:view',
+      'checksheets:create',
+      'checksheets:edit',
+    ],
   },
   {
     id: 'group-operator',
     name: 'Operator',
-    description: 'Enters process check sheet readings for their shift.',
+    description: 'Enters process check sheet readings for their shift while it is still a draft.',
     permissions: ['checksheets:view', 'checksheets:create'],
   },
   {

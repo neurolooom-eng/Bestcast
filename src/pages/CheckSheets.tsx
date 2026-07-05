@@ -11,12 +11,7 @@ import { CHECK_SHEETS } from '../data/checkSheets'
 import { loadCheckSheets, saveCheckSheet, updateCheckSheet } from '../data/repository'
 import { checkSheetStatusTone } from '../lib/tones'
 import { useAsyncData } from '../lib/useAsyncData'
-import type { CheckSheetRecord, CheckSheetStatus } from '../types/domain'
-
-const NEXT_STATUS: Partial<Record<CheckSheetStatus, CheckSheetStatus>> = {
-  submitted: 'reviewed',
-  reviewed: 'approved',
-}
+import type { CheckSheetRecord } from '../types/domain'
 
 const columns: DataColumn<CheckSheetRecord>[] = [
   { key: 'date', header: 'Date', width: 110, nowrap: true },
@@ -32,30 +27,63 @@ const columns: DataColumn<CheckSheetRecord>[] = [
 export function CheckSheets() {
   const { hasPermission } = useAccess()
   const canCreate = hasPermission('checksheets:create')
-  const canApprove = hasPermission('checksheets:approve')
   const { data: records, setData: setRecords, loading } = useAsyncData(loadCheckSheets, CHECK_SHEETS)
   const [active, setActive] = useState<CheckSheetRecord | null>(null)
-  const [mode, setMode] = useState<'view' | 'new'>('view')
+  const [isNew, setIsNew] = useState(false)
+
+  /** draft -> editable by the creator; submitted -> editable only by the line supervisor; approved -> locked forever. */
+  function canEditRecord(record: CheckSheetRecord) {
+    if (record.status === 'approved') return false
+    if (record.status === 'draft') return hasPermission('checksheets:create')
+    return hasPermission('checksheets:edit')
+  }
 
   function openNew() {
     setActive(emptyCheckSheet())
-    setMode('new')
+    setIsNew(true)
   }
 
-  function save() {
+  function openRow(record: CheckSheetRecord) {
+    setActive(record)
+    setIsNew(false)
+  }
+
+  function close() {
+    setActive(null)
+    setIsNew(false)
+  }
+
+  function saveDraft() {
     if (!active) return
     setRecords((prev) => [active, ...prev])
-    setActive(null)
     saveCheckSheet(active).catch((err) => console.warn('Could not persist check sheet to Google Sheets:', err))
+    close()
   }
 
-  function advanceStatus(record: CheckSheetRecord) {
-    const next = NEXT_STATUS[record.status]
-    if (!next) return
-    const updated = { ...record, status: next }
-    setRecords((prev) => prev.map((r) => (r.id === record.id ? updated : r)))
-    updateCheckSheet(updated).catch((err) => console.warn('Could not persist status change to Google Sheets:', err))
+  function saveChanges() {
+    if (!active) return
+    setRecords((prev) => prev.map((r) => (r.id === active.id ? active : r)))
+    updateCheckSheet(active).catch((err) => console.warn('Could not persist check sheet changes to Google Sheets:', err))
+    close()
   }
+
+  function sendForReview() {
+    if (!active) return
+    const updated: CheckSheetRecord = { ...active, status: 'submitted' }
+    setRecords((prev) => prev.map((r) => (r.id === updated.id ? updated : r)))
+    updateCheckSheet(updated).catch((err) => console.warn('Could not persist status change to Google Sheets:', err))
+    close()
+  }
+
+  function approve() {
+    if (!active) return
+    const updated: CheckSheetRecord = { ...active, status: 'approved' }
+    setRecords((prev) => prev.map((r) => (r.id === updated.id ? updated : r)))
+    updateCheckSheet(updated).catch((err) => console.warn('Could not persist status change to Google Sheets:', err))
+    close()
+  }
+
+  const editable = !!active && (isNew || canEditRecord(active))
 
   return (
     <div className="space-y-4">
@@ -67,8 +95,10 @@ export function CheckSheets() {
           <div>
             <h1 className="text-xl font-bold text-text">Process Check Sheets</h1>
             <p className="text-sm text-muted">
-              Production line records (QC FMT 038) - one entry per shift, per line. Digitised from the Mando Model
-              Line process check sheet.
+              Production line records (QC FMT 038) - one entry per shift, per line. Click a row to open it. Every
+              sheet starts as a <strong className="text-text">Draft</strong>, moves to{' '}
+              <strong className="text-text">Submitted</strong> via Send for Review (editable by the line
+              supervisor), then <strong className="text-text">Approved</strong> - locked for good.
             </p>
           </div>
         </div>
@@ -82,65 +112,32 @@ export function CheckSheets() {
       {loading ? (
         <p className="text-sm text-muted">Loading check sheets…</p>
       ) : (
-        <DataTable
-          tableKey="check-sheets"
-          columns={[
-            ...columns,
-            {
-              key: 'view',
-              header: '',
-              width: canApprove ? 170 : 90,
-              render: (r) => (
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    className="text-xs font-medium text-primary hover:underline"
-                    onClick={() => {
-                      setActive(r)
-                      setMode('view')
-                    }}
-                  >
-                    View
-                  </button>
-                  {canApprove && NEXT_STATUS[r.status] && (
-                    <button
-                      type="button"
-                      className="text-xs font-medium text-success hover:underline"
-                      onClick={() => advanceStatus(r)}
-                    >
-                      Mark {NEXT_STATUS[r.status]}
-                    </button>
-                  )}
-                </div>
-              ),
-            },
-          ]}
-          data={records}
-        />
+        <DataTable tableKey="check-sheets" columns={columns} data={records} onRowClick={openRow} />
       )}
 
       <Drawer
         open={!!active}
-        onClose={() => setActive(null)}
+        onClose={close}
         wide
-        title={mode === 'new' ? 'New Process Check Sheet' : `Check Sheet - ${active?.line} · ${active?.date} · ${active?.shift} Shift`}
+        title={isNew ? 'New Process Check Sheet' : `Check Sheet - ${active?.line} · ${active?.date} · ${active?.shift} Shift`}
         subtitle="QC FMT 038 · Rev.10"
         footer={
-          mode === 'new' ? (
-            <>
-              <Button variant="outline" onClick={() => setActive(null)}>
-                Cancel
-              </Button>
-              <Button onClick={save}>Save Check Sheet</Button>
-            </>
-          ) : (
-            <Button variant="outline" onClick={() => setActive(null)}>
-              Close
+          <>
+            <Button variant="outline" onClick={close}>
+              {isNew ? 'Cancel' : 'Close'}
             </Button>
-          )
+            {isNew && <Button onClick={saveDraft}>Save Draft</Button>}
+            {!isNew && active && editable && <Button variant="outline" onClick={saveChanges}>Save Changes</Button>}
+            {!isNew && active && active.status === 'draft' && editable && (
+              <Button onClick={sendForReview}>Send for Review</Button>
+            )}
+            {!isNew && active && active.status === 'submitted' && hasPermission('checksheets:approve') && (
+              <Button onClick={approve}>Approve</Button>
+            )}
+          </>
         }
       >
-        {active && <CheckSheetForm record={active} onChange={setActive} readOnly={mode === 'view'} />}
+        {active && <CheckSheetForm record={active} onChange={setActive} readOnly={!editable} />}
       </Drawer>
     </div>
   )

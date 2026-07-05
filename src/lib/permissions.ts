@@ -15,8 +15,9 @@ export const PERMISSION_CATALOG: PermissionMeta[] = [
   { key: 'specifications:view', module: 'Specifications', label: 'View' },
   { key: 'specifications:edit', module: 'Specifications', label: 'Edit' },
   { key: 'checksheets:view', module: 'Process Check Sheets', label: 'View' },
-  { key: 'checksheets:create', module: 'Process Check Sheets', label: 'Create' },
-  { key: 'checksheets:approve', module: 'Process Check Sheets', label: 'Approve / Review' },
+  { key: 'checksheets:create', module: 'Process Check Sheets', label: 'Create Draft' },
+  { key: 'checksheets:edit', module: 'Process Check Sheets', label: 'Edit While In Review' },
+  { key: 'checksheets:approve', module: 'Process Check Sheets', label: 'Approve' },
   { key: 'admin:access', module: 'Admin', label: 'Users & Access' },
   { key: 'config:access', module: 'Developer', label: 'Backend Config' },
 ]

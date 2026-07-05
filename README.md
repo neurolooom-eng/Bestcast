@@ -113,6 +113,28 @@ Since there's no backend auth, the topbar's user chip is a **"switch user"** men
 sign-in) so every group's gating can be demoed live - it persists the chosen user to
 localStorage. Wire real authentication in front of this before production use.
 
+## Process Check Sheet lifecycle
+
+This is the flagship module, so its record lifecycle is enforced end to end rather than being
+just a status label:
+
+1. **Draft** - every new check sheet starts here. Editable by anyone with `checksheets:create`
+   (Operator, Shift Supervisor, Administrator) - including adding/removing Shift Reading rows,
+   which only appear when the record is actually editable (this is why earlier revisions looked
+   like there was no way to add readings: once saved, records had no edit path at all).
+2. Clicking **Send for Review** (shown only on an editable draft) moves it to **Submitted** -
+   there's no free-form status dropdown; the `Record Status` field is a read-only chip, and the
+   only way to change it is through this action.
+3. **Submitted** - editable only by `checksheets:edit` holders (Shift Supervisor, Administrator)
+   - the line supervisor reviewing/correcting the shift's entries. A Quality Manager
+   (`checksheets:approve` but not `checksheets:edit`) sees it read-only and can only **Approve**.
+4. **Approved** - locked for everyone, permanently. No further edits or actions are offered
+   regardless of permission.
+
+Clicking anywhere on a row in the Process Check Sheets table opens it (in edit or read-only
+mode depending on the above), replacing the old separate "View" link. See
+`canEditRecord()` in `src/pages/CheckSheets.tsx`.
+
 ## Developer Config page
 
 **Developer Config** (`/config`, gated to the `config:access` permission - the `Developer` and

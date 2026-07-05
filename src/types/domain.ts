@@ -6,7 +6,14 @@ export type OkNotOk = 'OK' | 'NOT OK'
 
 export type YesNo = 'YES' | 'NO'
 
-export type CheckSheetStatus = 'draft' | 'submitted' | 'reviewed' | 'approved'
+/**
+ * draft - editable by whoever created it (checksheets:create).
+ * submitted - "sent for review"; editable only by the line supervisor
+ * (checksheets:edit); moved here only via the explicit Send for Review action.
+ * approved - locked for everyone, forever; only reachable via the explicit
+ * Approve action (checksheets:approve).
+ */
+export type CheckSheetStatus = 'draft' | 'submitted' | 'approved'
 
 export type DocumentStatus = 'draft' | 'in-review' | 'approved' | 'obsolete'
 
