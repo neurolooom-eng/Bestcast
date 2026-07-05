@@ -43,6 +43,13 @@ emerald, high-contrast) round out the theme picker.
 Every color in the app is a semantic CSS-variable token (`bg-primary`, `text-muted`, ...), so
 retuning the palette further is a one-file edit to `src/styles/themes.css`.
 
+**Referencing files in `public/` from code:** always go through `assetUrl()`
+(`src/lib/assetUrl.ts`), never a bare `/logo.png`-style root-absolute path. Vite only rewrites
+asset paths it can see statically in `index.html`; a path baked into a runtime string in a
+`.tsx` file is invisible to it, so on GitHub Pages (served from `/Bestcast/`, not the domain
+root) a bare `/logo.png` 404s - `assetUrl()` prefixes it with `import.meta.env.BASE_URL` so it
+resolves under whatever path the app is actually served from.
+
 Full company profile (legal/brand name, HQ, leadership, applicable standards - ISO 9001:2015 /
 IATF 16949:2016 - core methodologies and industries served) lives in `src/data/company.ts` and
 is displayed on the Settings page.

@@ -4,6 +4,7 @@ import { Card } from '../components/ui/Card'
 import { StatusChip } from '../components/ui/StatusChip'
 import { useTheme, THEMES } from '../context/ThemeContext'
 import { COMPANY, CORE_METHODOLOGIES, INDUSTRIES_SERVED, QUALITY_STANDARDS } from '../data/company'
+import { assetUrl } from '../lib/assetUrl'
 
 export function Settings() {
   const { theme, setTheme } = useTheme()
@@ -22,7 +23,7 @@ export function Settings() {
 
       <Card className="p-4">
         <div className="mb-4 flex items-center gap-4">
-          <img src="/logo.png" alt={COMPANY.brandName} className="h-10 w-auto" />
+          <img src={assetUrl('/logo.png')} alt={COMPANY.brandName} className="h-10 w-auto" />
           <div>
             <p className="text-sm font-semibold text-text">{COMPANY.legalName}</p>
             <p className="text-xs text-muted">{COMPANY.domain}</p>
