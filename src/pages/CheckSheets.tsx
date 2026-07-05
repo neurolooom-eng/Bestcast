@@ -6,11 +6,17 @@ import { Button } from '../components/ui/Button'
 import { DataTable, type DataColumn } from '../components/ui/DataTable'
 import { Drawer } from '../components/ui/Drawer'
 import { StatusChip } from '../components/ui/StatusChip'
+import { useAccess } from '../context/AccessContext'
 import { CHECK_SHEETS } from '../data/checkSheets'
-import { loadCheckSheets, saveCheckSheet } from '../data/repository'
+import { loadCheckSheets, saveCheckSheet, updateCheckSheet } from '../data/repository'
 import { checkSheetStatusTone } from '../lib/tones'
 import { useAsyncData } from '../lib/useAsyncData'
-import type { CheckSheetRecord } from '../types/domain'
+import type { CheckSheetRecord, CheckSheetStatus } from '../types/domain'
+
+const NEXT_STATUS: Partial<Record<CheckSheetStatus, CheckSheetStatus>> = {
+  submitted: 'reviewed',
+  reviewed: 'approved',
+}
 
 const columns: DataColumn<CheckSheetRecord>[] = [
   { key: 'date', header: 'Date', width: 110, nowrap: true },
@@ -24,6 +30,9 @@ const columns: DataColumn<CheckSheetRecord>[] = [
 ]
 
 export function CheckSheets() {
+  const { hasPermission } = useAccess()
+  const canCreate = hasPermission('checksheets:create')
+  const canApprove = hasPermission('checksheets:approve')
   const { data: records, setData: setRecords, loading } = useAsyncData(loadCheckSheets, CHECK_SHEETS)
   const [active, setActive] = useState<CheckSheetRecord | null>(null)
   const [mode, setMode] = useState<'view' | 'new'>('view')
@@ -38,6 +47,14 @@ export function CheckSheets() {
     setRecords((prev) => [active, ...prev])
     setActive(null)
     saveCheckSheet(active).catch((err) => console.warn('Could not persist check sheet to Google Sheets:', err))
+  }
+
+  function advanceStatus(record: CheckSheetRecord) {
+    const next = NEXT_STATUS[record.status]
+    if (!next) return
+    const updated = { ...record, status: next }
+    setRecords((prev) => prev.map((r) => (r.id === record.id ? updated : r)))
+    updateCheckSheet(updated).catch((err) => console.warn('Could not persist status change to Google Sheets:', err))
   }
 
   return (
@@ -55,9 +72,11 @@ export function CheckSheets() {
             </p>
           </div>
         </div>
-        <Button icon={<Plus className="h-4 w-4" />} onClick={openNew}>
-          New Check Sheet
-        </Button>
+        {canCreate && (
+          <Button icon={<Plus className="h-4 w-4" />} onClick={openNew}>
+            New Check Sheet
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -70,18 +89,29 @@ export function CheckSheets() {
             {
               key: 'view',
               header: '',
-              width: 90,
+              width: canApprove ? 170 : 90,
               render: (r) => (
-                <button
-                  type="button"
-                  className="text-xs font-medium text-primary hover:underline"
-                  onClick={() => {
-                    setActive(r)
-                    setMode('view')
-                  }}
-                >
-                  View
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    className="text-xs font-medium text-primary hover:underline"
+                    onClick={() => {
+                      setActive(r)
+                      setMode('view')
+                    }}
+                  >
+                    View
+                  </button>
+                  {canApprove && NEXT_STATUS[r.status] && (
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-success hover:underline"
+                      onClick={() => advanceStatus(r)}
+                    >
+                      Mark {NEXT_STATUS[r.status]}
+                    </button>
+                  )}
+                </div>
               ),
             },
           ]}

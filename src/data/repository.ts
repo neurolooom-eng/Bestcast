@@ -73,3 +73,8 @@ export async function saveCheckSheet(record: CheckSheetRecord): Promise<void> {
   if (!sheets.isConfigured()) return
   await sheets.createRow('CheckSheets', encodeCheckSheetRow(record))
 }
+
+export async function updateCheckSheet(record: CheckSheetRecord): Promise<void> {
+  if (!sheets.isConfigured()) return
+  await sheets.updateRow('CheckSheets', record.id, encodeCheckSheetRow(record))
+}

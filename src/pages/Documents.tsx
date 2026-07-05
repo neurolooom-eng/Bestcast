@@ -5,6 +5,7 @@ import { DataTable, type DataColumn } from '../components/ui/DataTable'
 import { Drawer } from '../components/ui/Drawer'
 import { FormField, type SelectOption } from '../components/ui/FormField'
 import { StatusChip } from '../components/ui/StatusChip'
+import { useAccess } from '../context/AccessContext'
 import { DOCUMENTS } from '../data/documents'
 import { loadDocuments, saveDocument } from '../data/repository'
 import { nextId } from '../lib/id'
@@ -46,6 +47,8 @@ const columns: DataColumn<QmsDocument>[] = [
 ]
 
 export function Documents() {
+  const { hasPermission } = useAccess()
+  const canCreate = hasPermission('documents:create')
   const { data: docs, setData: setDocs, loading } = useAsyncData(loadDocuments, DOCUMENTS)
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<QmsDocument>(emptyDocument())
@@ -73,9 +76,11 @@ export function Documents() {
             <p className="text-sm text-muted">Quality manual, SOPs, work instructions and formats under document control.</p>
           </div>
         </div>
-        <Button icon={<Plus className="h-4 w-4" />} onClick={openNew}>
-          New Document
-        </Button>
+        {canCreate && (
+          <Button icon={<Plus className="h-4 w-4" />} onClick={openNew}>
+            New Document
+          </Button>
+        )}
       </div>
 
       {loading ? <p className="text-sm text-muted">Loading documents…</p> : <DataTable tableKey="documents" columns={columns} data={docs} />}

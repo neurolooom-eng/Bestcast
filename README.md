@@ -85,6 +85,48 @@ mock arrays in `src/data/*.ts`, and it also falls back automatically if a config
 API call fails - so a broken or unset backend degrades to the demo data instead of breaking
 the page.
 
+## Users & access (RBAC)
+
+There's no real login yet (see scope notes below) - instead, **Users & Access** under Admin
+(`/admin`, gated to the `admin:access` permission) lets you manage:
+
+- **Users** - name, email, and which Group they belong to.
+- **Groups & Permissions** - a matrix of view/create/edit/approve permissions per module
+  (Dashboard, QMS Documents, Specifications, Process Check Sheets, Admin, Developer), toggled
+  live per group.
+
+Seeded groups: `Administrator` (everything), `Developer` (view + Developer Config only),
+`Quality Manager` (documents/specifications + check sheet review), `Shift Supervisor`
+(check sheet entry), `Operator` (check sheet entry only), `Viewer` (read-only everywhere).
+The sidebar nav, the "New Document"/"New Check Sheet" buttons, and check sheet
+approve/review actions are all gated by these permissions (`src/context/AccessContext.tsx`,
+`src/components/RequirePermission.tsx`).
+
+Since there's no backend auth, the topbar's user chip is a **"switch user"** menu (not a real
+sign-in) so every group's gating can be demoed live - it persists the chosen user to
+localStorage. Wire real authentication in front of this before production use.
+
+## Developer Config page
+
+**Developer Config** (`/config`, gated to the `config:access` permission - the `Developer` and
+`Administrator` groups by default) lets a developer wire up and verify the Google Sheets
+backend **without a rebuild or redeploy**:
+
+- **Apps Script Exec URL** - overrides the build-time `VITE_SHEETS_API_URL` for this browser.
+  Useful right after re-deploying the script, since Apps Script mints a new `/exec` URL on
+  "New deployment".
+- **Spreadsheet ID** (optional) - lets one script deployment serve more than one spreadsheet.
+- **Sheet tab names** - in case the Google Sheet's tabs aren't named exactly `Specifications`
+  / `Documents` / `CheckSheets`.
+- **Test Connection** - calls each configured tab live and reports rows found / the exact
+  error, so a broken deployment is diagnosable from the browser.
+- A **Deployment** panel showing the current build ID/date and links to the repo's Actions
+  runs and Pages settings.
+
+These overrides are stored in `localStorage` (`src/lib/runtimeConfig.ts`) and take priority
+over the build-time env var; `src/lib/sheetsClient.ts` resolves the effective URL/tab
+name/spreadsheet ID on every request.
+
 ## Responsive design
 
 The layout is designed mobile-first and verified at mobile (390px), tablet (834px) and
@@ -117,11 +159,15 @@ src/
     ui/          Button, Card, FormField, StatusChip, KpiCard, ChartCard, DataTable, Drawer
     layout/      Sidebar, Topbar, Footer, ThemeMenu, UserChip, Logo, AppLayout, nav.ts
     checksheet/  CheckSheetForm + empty-record factory (shared by "new" and "view" drawers)
-  context/       ThemeContext (6 palettes, persisted to localStorage)
-  data/          repository.ts (Sheets-or-mock data layer) + mock arrays + dropdown options
-  lib/           sheetsClient.ts (Apps Script fetch wrapper), useAsyncData, cn, id, tones
-  types/         Domain types (Specification, QmsDocument, CheckSheetRecord, ...)
-  pages/         Dashboard, Documents, Specifications, CheckSheets, Settings
+    RequirePermission.tsx  Route/section guard by permission
+  context/       ThemeContext (6 palettes) + AccessContext (users/groups/current user, RBAC)
+  data/          repository.ts (Sheets-or-mock data layer), groups.ts/users.ts (RBAC seed),
+                 mock arrays + dropdown options
+  lib/           sheetsClient.ts (Apps Script fetch wrapper), runtimeConfig.ts (Config page
+                 overrides), permissions.ts (permission catalog), useAsyncData, cn, id, tones
+  types/         Domain types (Specification, QmsDocument, CheckSheetRecord, ...) + access.ts
+                 (Permission, Group, User)
+  pages/         Dashboard, Documents, Specifications, CheckSheets, Settings, Admin, Config
   styles/        themes.css (token definitions per theme)
 docs/
   DESIGN_DEFAULTS.md   The design-system spec this app implements
@@ -138,8 +184,9 @@ scripts/
 - Every module is built against typed domain models (`src/types/domain.ts`) and reads/writes
   through `src/data/repository.ts`, so the UI is the same whether it's talking to the live
   Google Sheet or running on bundled mock data.
-- No authentication - the topbar shows a static demo user, and the Apps Script Web App is
-  reachable by anyone with its URL (see the limitations note in
+- No real authentication - group/permission gating (RBAC) is real and enforced in the UI, but
+  "who you are" is a client-side "switch user" menu, not a login. The Apps Script Web App is
+  also reachable by anyone with its URL (see the limitations note in
   `google-apps-script/README.md`).
 - The Process Check Sheet form models the original spreadsheet's shift readings, per-machine
   readings, 10-cavity core-pin verification, die-prep start-up checks and sign-off section as
@@ -148,8 +195,9 @@ scripts/
 
 ## Next steps for production
 
-- Add real authentication and lock down the Apps Script endpoint (shared-secret param or a
-  proper backend) before wider rollout - see the limitations note in
+- Add real authentication (SSO/email+password) that resolves to one of the existing Groups,
+  replacing the client-side "switch user" menu, and lock down the Apps Script endpoint
+  (shared-secret param or a proper backend) before wider rollout - see the limitations note in
   `google-apps-script/README.md`.
 - Replace the placeholder theme/logo with Best Cast's real brand assets once available.
 - Add non-conformance/CAPA tracking and per-spec tolerance validation on check sheet entry.

@@ -48,7 +48,9 @@ those arrays as CSV, or leave the tabs empty to start recording live).
 
 ## 3. Point the frontend at it
 
-Set the URL as an environment variable when building:
+Two ways to configure the exec URL - use whichever fits:
+
+**Build-time (env var)** - set it as an environment variable when building:
 
 ```bash
 # .env (local dev) - see .env.example
@@ -60,8 +62,23 @@ For the GitHub Pages deployment, add it as a repository variable
 `VITE_SHEETS_API_URL` - the deploy workflow (`.github/workflows/deploy-pages.yml`)
 passes it through as a build-time env var.
 
-If this isn't set, the app runs entirely on its bundled mock data (no
+**Runtime (Config page)** - anyone in the `Developer` or `Administrator` group
+can open **Developer Config** in the app's sidebar and paste the exec URL
+(plus optionally a spreadsheet ID and custom tab names) without a rebuild or
+redeploy - useful after re-deploying the script, since "New deployment"
+mints a new `/exec` URL. This is stored in the browser's localStorage and
+takes priority over the build-time env var. It also has a **Test Connection**
+button that calls each configured tab and reports success/failure live.
+
+If neither is set, the app runs entirely on its bundled mock data (no
 backend needed) - useful for demos or before the sheet is ready.
+
+### Multiple spreadsheets from one deployment
+
+`Code.gs` accepts an optional `spreadsheetId` (query param on GET, body field
+on POST) and opens that spreadsheet via `SpreadsheetApp.openById` instead of
+the one the script is bound to. The Config page's "Spreadsheet ID" field
+sets this - leave it blank to use the bound spreadsheet (the common case).
 
 ## Notes / limitations (POC)
 

@@ -8,6 +8,7 @@ export type FieldType =
   | 'number'
   | 'date'
   | 'time'
+  | 'email'
   | 'select'
   | 'status'
   | 'user'
@@ -60,11 +61,11 @@ export function FormField({
         {required && <span className="text-danger"> *</span>}
       </label>
 
-      {(type === 'text' || type === 'number' || type === 'date' || type === 'time') && (
+      {(type === 'text' || type === 'number' || type === 'date' || type === 'time' || type === 'email') && (
         <div className="relative">
           <input
             className="input"
-            type={type === 'text' ? 'text' : type}
+            type={type}
             value={value as string | number}
             placeholder={placeholder}
             disabled={isReadOnly}

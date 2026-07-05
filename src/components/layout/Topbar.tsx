@@ -36,7 +36,7 @@ export function Topbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
       <div className="flex items-center gap-2 md:gap-3">
         <ThemeMenu />
         <div className="h-6 w-px bg-border" />
-        <UserChip name="Vikensh R" role="QMS In-Charge" />
+        <UserChip />
       </div>
     </header>
   )
