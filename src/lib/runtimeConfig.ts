@@ -10,8 +10,12 @@ export const DEFAULT_TAB_NAMES = {
   Specifications: 'Specifications',
   Documents: 'Documents',
   CheckSheets: 'CheckSheets',
+  MaterialRequisitions: 'MaterialRequisitions',
   PurchaseOrders: 'PurchaseOrders',
   StoreItems: 'StoreItems',
+  StockInEntries: 'StockInEntries',
+  StockOutEntries: 'StockOutEntries',
+  StockTransferEntries: 'StockTransferEntries',
   AccountVouchers: 'AccountVouchers',
   LedgerAccounts: 'LedgerAccounts',
 } as const

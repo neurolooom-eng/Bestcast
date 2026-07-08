@@ -8,7 +8,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ArrowUpDown, Columns3, Download, GripVertical, Rows3, Search } from 'lucide-react'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '../../lib/cn'
 
 export interface DataColumn<T> {
@@ -48,6 +48,17 @@ export function DataTable<T extends { id: string | number }>({
   )
   const [showColumnMenu, setShowColumnMenu] = useState(false)
   const dragCol = useRef<string | null>(null)
+
+  // If a caller reuses the same DataTable instance for a genuinely different
+  // column set (e.g. swapping columns behind a tab switch without remounting),
+  // resync the column-order/width/hidden state instead of keeping stale keys.
+  const columnKeySignature = columns.map((c) => c.key).join('|')
+  useEffect(() => {
+    setColumnOrder(columns.map((c) => c.key))
+    setHidden(new Set())
+    setWidths(Object.fromEntries(columns.map((c) => [c.key, c.width ?? 160])))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnKeySignature])
 
   const colDefs = useMemo<ColumnDef<T>[]>(
     () =>

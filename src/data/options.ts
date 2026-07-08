@@ -1,8 +1,8 @@
 import type { SelectOption } from '../components/ui/FormField'
 import type {
   LedgerGroup,
-  PurchaseCategory,
   PurchaseOrderStatus,
+  RequisitionStatus,
   StoreCategory,
   VoucherStatus,
   VoucherType,
@@ -24,13 +24,25 @@ export const OK_NOT_OK_OPTIONS: SelectOption[] = (['OK', 'NOT OK'] satisfies OkN
 
 export const SUPERVISOR_OPTIONS: SelectOption[] = ['Vimal', 'Bharathi', 'Mohan', 'Naveen', 'Ashok'].map((v) => ({ value: v, label: v }))
 
-export const PURCHASE_CATEGORY_OPTIONS: SelectOption[] = (
-  ['Raw Material', 'Consumables', 'Spares', 'Tooling', 'Services'] satisfies PurchaseCategory[]
-).map((v) => ({ value: v, label: v }))
-
 export const PURCHASE_ORDER_STATUS_OPTIONS: SelectOption[] = (
   ['draft', 'approved', 'ordered', 'received', 'cancelled'] satisfies PurchaseOrderStatus[]
 ).map((v) => ({ value: v, label: v }))
+
+export const REQUISITION_STATUS_OPTIONS: SelectOption[] = (
+  ['Pending', 'Approved', 'Converted to PO', 'Rejected'] satisfies RequisitionStatus[]
+).map((v) => ({ value: v, label: v }))
+
+export const DEPARTMENT_OPTIONS: SelectOption[] = [
+  'Melting',
+  'Die Casting - Line 01',
+  'Die Casting - Line 02',
+  'Die Casting - Line 03',
+  'Die Casting - Line 06',
+  'Tool Room',
+  'Maintenance',
+  'Quality',
+  'Stores',
+].map((v) => ({ value: v, label: v }))
 
 export const STORE_CATEGORY_OPTIONS: SelectOption[] = (
   ['Raw Material', 'Consumable', 'Spare Part', 'Finished Goods', 'Packing Material'] satisfies StoreCategory[]

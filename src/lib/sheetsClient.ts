@@ -14,8 +14,12 @@ export type SheetName =
   | 'Specifications'
   | 'Documents'
   | 'CheckSheets'
+  | 'MaterialRequisitions'
   | 'PurchaseOrders'
   | 'StoreItems'
+  | 'StockInEntries'
+  | 'StockOutEntries'
+  | 'StockTransferEntries'
   | 'AccountVouchers'
   | 'LedgerAccounts'
 

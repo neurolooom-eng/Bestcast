@@ -1,17 +1,48 @@
-export type PurchaseCategory = 'Raw Material' | 'Consumables' | 'Spares' | 'Tooling' | 'Services'
 export type PurchaseOrderStatus = 'draft' | 'approved' | 'ordered' | 'received' | 'cancelled'
 
-export interface PurchaseOrder {
+export type RequisitionStatus = 'Pending' | 'Approved' | 'Converted to PO' | 'Rejected'
+
+/** Material Requisition - a floor/dept request for material, the source for Purchase Order line items. */
+export interface MaterialRequisition {
   id: string
-  poNumber: string
-  vendorName: string
-  category: PurchaseCategory
-  itemDescription: string
+  mrNo: string
+  partNo: string
+  partDescription: string
   quantity: number
   unit: string
-  unitPrice: number
-  orderDate: string
-  expectedDeliveryDate: string
+  department: string
+  location: string
+  requestedBy: string
+  requestDate: string
+  status: RequisitionStatus
+}
+
+export interface PurchaseOrderItem {
+  id: string
+  /** Set when this line was added from a Material Requisition, for traceability. */
+  mrId?: string
+  partNo: string
+  description: string
+  quantity: number
+  unit: string
+  rate: number
+  taxPercent: number
+}
+
+/** Header-detail Purchase Order: vendor/billing/shipping header + line items + computed totals. */
+export interface PurchaseOrderDoc {
+  id: string
+  poNumber: string
+  poDate: string
+  vendorName: string
+  vendorAddress: string
+  vendorGstin: string
+  quoteRefNo: string
+  billingAddress: string
+  shippingAddress: string
+  items: PurchaseOrderItem[]
+  additionalCharges: number
+  authorizedSignatory: string
   status: PurchaseOrderStatus
   requestedBy: string
 }
@@ -29,6 +60,44 @@ export interface StoreItem {
   unitCost: number
   location: string
   lastUpdated: string
+}
+
+export interface StockInEntry {
+  id: string
+  transactionNo: string
+  itemCode: string
+  itemName: string
+  quantity: number
+  source: string
+  receivedBy: string
+  date: string
+  remarks: string
+}
+
+export interface StockOutEntry {
+  id: string
+  transactionNo: string
+  itemCode: string
+  itemName: string
+  quantity: number
+  purpose: string
+  issuedTo: string
+  issuedBy: string
+  date: string
+  remarks: string
+}
+
+export interface StockTransferEntry {
+  id: string
+  transactionNo: string
+  itemCode: string
+  itemName: string
+  quantity: number
+  fromLocation: string
+  toLocation: string
+  transferredBy: string
+  date: string
+  remarks: string
 }
 
 export type VoucherType = 'Purchase Invoice' | 'Sales Invoice' | 'Payment' | 'Receipt'

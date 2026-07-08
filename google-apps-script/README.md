@@ -6,7 +6,7 @@ keeps the whole stack free to run and host on GitHub Pages.
 
 ## 1. Create the spreadsheet
 
-Create a new Google Sheet with **seven tabs**, named exactly as below, each
+Create a new Google Sheet with **eleven tabs**, named exactly as below, each
 with a header row (row 1) with these exact column names:
 
 ### `Specifications`
@@ -33,17 +33,53 @@ value - the frontend serialises/parses these before sending or after
 receiving (see `NESTED_FIELDS` in `src/data/repository.ts`). Leave them as
 plain text cells in Sheets.
 
+### `MaterialRequisitions`
+
+```
+id  mrNo  partNo  partDescription  quantity  unit  department  location  requestedBy  requestDate  status
+```
+
 ### `PurchaseOrders`
 
 ```
-id  poNumber  vendorName  category  itemDescription  quantity  unit  unitPrice  orderDate  expectedDeliveryDate  status  requestedBy
+id  poNumber  poDate  vendorName  vendorAddress  vendorGstin  quoteRefNo  billingAddress  shippingAddress  items  additionalCharges  authorizedSignatory  status  requestedBy
 ```
+
+The `items` column holds **JSON text** (an array of `{ id, mrId?, partNo, description, quantity, unit, rate, taxPercent }`)
+- like `CheckSheets`, the frontend serialises/parses it (see `jsonFieldResource` in
+`src/data/repository.ts`). Rate/tax/amount math (line amount, tax amount, subtotal,
+total tax, net amount, amount-in-words) is all computed client-side from these
+items and never stored as separate columns.
 
 ### `StoreItems`
 
 ```
 id  itemCode  itemName  category  unitOfMeasure  quantityInStock  reorderLevel  unitCost  location  lastUpdated
 ```
+
+### `StockInEntries`
+
+```
+id  transactionNo  itemCode  itemName  quantity  source  receivedBy  date  remarks
+```
+
+### `StockOutEntries`
+
+```
+id  transactionNo  itemCode  itemName  quantity  purpose  issuedTo  issuedBy  date  remarks
+```
+
+### `StockTransferEntries`
+
+```
+id  transactionNo  itemCode  itemName  quantity  fromLocation  toLocation  transferredBy  date  remarks
+```
+
+Saving a Stock In/Out/Transfer entry in the app also updates the matching
+`StoreItems` row's `quantityInStock` (and `location`, for transfers) - see
+`StockInTab.tsx`/`StockOutTab.tsx`/`StockTransferTab.tsx`. This POC tracks one
+location per item, so a transfer overwrites the item's location rather than
+splitting quantity across multiple locations.
 
 ### `AccountVouchers`
 
@@ -57,8 +93,8 @@ id  voucherNo  type  party  amount  voucherDate  dueDate  status  paymentMode  r
 id  accountCode  accountName  group  openingBalance  debit  credit  asOfDate
 ```
 
-These four are flat records (no JSON-text columns) - unlike `CheckSheets`,
-they go through the Sheets API as plain rows.
+All of these except `CheckSheets` and `PurchaseOrders` are flat records (no
+JSON-text columns) - they go through the Sheets API as plain rows.
 
 You can seed the sheets with the data already in `src/data/*.ts` (export
 those arrays as CSV, or leave the tabs empty to start recording live).

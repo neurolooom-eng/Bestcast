@@ -7,9 +7,15 @@ built around the production line and expanded with lighter supply-chain/finance 
 - **Production Line Docs** - master specifications & tolerances for the die-casting process
 - **Production Line Records** - digital shift-wise process check sheets (QC FMT 038), with a
   full draft → submitted → approved lifecycle (see below)
-- **Purchase** - purchase orders for raw material, consumables, spares and tooling
-- **Stores** - raw material/consumable/spares/finished-goods inventory, with computed stock
-  status (In Stock / Low Stock / Out of Stock)
+- **Purchase** - **Material Requisitions** (part no/description/qty/dept/location) that an
+  approved requisition can be pulled into a **Purchase Order**: vendor/GST/quote-ref header,
+  billing/shipping addresses, a line-item table (rate/qty/tax %) with computed amount/tax/line
+  total, totals (subtotal/total tax/additional charges/net amount), amount-in-words, an
+  authorized-signatory field, and a print preview
+- **Stores** - four tabs: **Stock Levels** (computed status In Stock / Low Stock / Out of
+  Stock), **Stock In**, **Stock Out** (blocks over-issuing past what's in stock) and
+  **Stock Transfer** - each receipt/issue/transfer also updates the item's quantity (and
+  location, for transfers) on Stock Levels
 - **Accounts** - purchase/sales invoices, payments and receipts (vouchers)
 - **Ledgers** - chart of accounts with running (debit/credit-normal aware) balances
 
@@ -211,6 +217,8 @@ src/
     ui/          Button, Card, FormField, StatusChip, KpiCard, ChartCard, DataTable, Drawer
     layout/      Sidebar, Topbar, Footer, ThemeMenu, UserChip, Logo, AppLayout, nav.ts
     checksheet/  CheckSheetForm + empty-record factory (shared by "new" and "view" drawers)
+    purchase/    PurchaseOrderForm, PurchaseOrderPrint, poTotals.ts, emptyPurchaseOrder.ts
+    stores/      StockLevelsTab, StockInTab, StockOutTab, StockTransferTab
     RequirePermission.tsx  Route/section guard by permission
   context/       ThemeContext (6 palettes) + AccessContext (users/groups/current user, RBAC)
   data/          repository.ts (Sheets-or-mock data layer), groups.ts/users.ts (RBAC seed),
@@ -238,11 +246,16 @@ scripts/
 - Every module is built against typed domain models (`src/types/domain.ts`, `src/types/business.ts`)
   and reads/writes through `src/data/repository.ts`, so the UI is the same whether it's talking
   to the live Google Sheet or running on bundled mock data.
-- Purchase/Stores/Accounts/Ledgers are simpler single-status CRUD modules (no multi-stage
-  approval lifecycle like Process Check Sheets) - a record is either creatable or, once it
-  exists, editable per the module's `:edit` permission. There's no cross-module linking yet
-  (e.g. approving a Purchase Order doesn't auto-create an Accounts voucher or adjust Stores
-  quantities).
+- Accounts/Ledgers are simpler single-status CRUD modules (no multi-stage approval lifecycle
+  like Process Check Sheets) - a record is either creatable or, once it exists, editable per
+  the module's `:edit` permission.
+- Purchase and Stores do have some cross-module linking: saving a Purchase Order flips every
+  Material Requisition used in its line items to `Converted to PO` (`savePo()` in
+  `src/pages/Purchase.tsx`), and saving a Stock In/Out/Transfer entry updates the matching
+  `StoreItem`'s `quantityInStock` (and `location`, for transfers) so Stock Levels reflects it
+  immediately (`src/components/stores/StockInTab.tsx` etc.). This is still a POC simplification
+  though - approving a PO doesn't auto-create an Accounts voucher, and each store item tracks
+  only one location (a transfer overwrites it rather than splitting quantity across locations).
 - No real authentication - group/permission gating (RBAC) is real and enforced in the UI, but
   "who you are" is a client-side "switch user" menu, not a login. The Apps Script Web App is
   also reachable by anyone with its URL (see the limitations note in
