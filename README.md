@@ -1,16 +1,25 @@
 # Best Cast e-QMS
 
-A web-based Quality Management System for **Best Cast IT Limited** ([bestcastgroup.com](https://bestcastgroup.com/)) covering:
+A web-based Quality Management System for **Best Cast IT Limited** ([bestcastgroup.com](https://bestcastgroup.com/)),
+built around the production line and expanded with lighter supply-chain/finance modules:
 
 - **QMS Documents** - quality manual, SOPs, work instructions and controlled formats
 - **Production Line Docs** - master specifications & tolerances for the die-casting process
-- **Production Line Records** - digital shift-wise process check sheets (QC FMT 038)
+- **Production Line Records** - digital shift-wise process check sheets (QC FMT 038), with a
+  full draft → submitted → approved lifecycle (see below)
+- **Purchase** - purchase orders for raw material, consumables, spares and tooling
+- **Stores** - raw material/consumable/spares/finished-goods inventory, with computed stock
+  status (In Stock / Low Stock / Out of Stock)
+- **Accounts** - purchase/sales invoices, payments and receipts (vouchers)
+- **Ledgers** - chart of accounts with running (debit/credit-normal aware) balances
 
-This is a **proof-of-concept** built from two source spreadsheets supplied for the pilot:
-`Tolerances_updated_.xlsx` (process specification/tolerance master) and
+The QMS core is a **proof-of-concept** built from two source spreadsheets supplied for the
+pilot: `Tolerances_updated_.xlsx` (process specification/tolerance master) and
 `Master_Cpy_Process_Check_sheet.xlsx_Update.xlsx` (the Mando Model Line shift check sheet,
-QC FMT 038 Rev.10). Their contents were digitised into `src/data/specifications.ts` and
-`src/data/checkSheets.ts` / `src/types/domain.ts`.
+QC FMT 038 Rev.10), digitised into `src/data/specifications.ts` and `src/data/checkSheets.ts` /
+`src/types/domain.ts`. Purchase/Stores/Accounts/Ledgers are illustrative mock data
+(`src/types/business.ts`, `src/data/purchaseOrders.ts` etc.) following the same patterns, not
+sourced from a specific spreadsheet.
 
 ## Stack
 
@@ -106,13 +115,14 @@ There's no real login yet (see scope notes below) - instead, **Users & Access** 
 
 - **Users** - name, email, and which Group they belong to.
 - **Groups & Permissions** - a matrix of view/create/edit/approve permissions per module
-  (Dashboard, QMS Documents, Specifications, Process Check Sheets, Admin, Developer), toggled
-  live per group.
+  (Dashboard, QMS Documents, Specifications, Process Check Sheets, Purchase, Stores, Accounts,
+  Ledgers, Admin, Developer), toggled live per group.
 
 Seeded groups: `Administrator` (everything), `Developer` (view + Developer Config only),
 `Quality Manager` (documents/specifications + check sheet review), `Shift Supervisor`
-(check sheet entry), `Operator` (check sheet entry only), `Viewer` (read-only everywhere).
-The sidebar nav, the "New Document"/"New Check Sheet" buttons, and check sheet
+(check sheet entry), `Operator` (check sheet entry only), `Purchase Officer` (purchase orders),
+`Store Keeper` (inventory), `Accountant` (vouchers + ledgers), `Viewer` (read-only everywhere).
+The sidebar nav, every module's create/edit buttons, and check sheet
 approve/review actions are all gated by these permissions (`src/context/AccessContext.tsx`,
 `src/components/RequirePermission.tsx`).
 
@@ -207,9 +217,11 @@ src/
                  mock arrays + dropdown options
   lib/           sheetsClient.ts (Apps Script fetch wrapper), runtimeConfig.ts (Config page
                  overrides), permissions.ts (permission catalog), useAsyncData, cn, id, tones
-  types/         Domain types (Specification, QmsDocument, CheckSheetRecord, ...) + access.ts
+  types/         domain.ts (Specification, QmsDocument, CheckSheetRecord, ...), business.ts
+                 (PurchaseOrder, StoreItem, AccountVoucher, LedgerAccount), access.ts
                  (Permission, Group, User)
-  pages/         Dashboard, Documents, Specifications, CheckSheets, Settings, Admin, Config
+  pages/         Dashboard, Documents, Specifications, CheckSheets, Purchase, Stores, Accounts,
+                 Ledgers, Settings, Admin, Config
   styles/        themes.css (token definitions per theme)
 docs/
   DESIGN_DEFAULTS.md   The design-system spec this app implements
@@ -223,9 +235,14 @@ scripts/
 
 ## Data & scope notes (POC)
 
-- Every module is built against typed domain models (`src/types/domain.ts`) and reads/writes
-  through `src/data/repository.ts`, so the UI is the same whether it's talking to the live
-  Google Sheet or running on bundled mock data.
+- Every module is built against typed domain models (`src/types/domain.ts`, `src/types/business.ts`)
+  and reads/writes through `src/data/repository.ts`, so the UI is the same whether it's talking
+  to the live Google Sheet or running on bundled mock data.
+- Purchase/Stores/Accounts/Ledgers are simpler single-status CRUD modules (no multi-stage
+  approval lifecycle like Process Check Sheets) - a record is either creatable or, once it
+  exists, editable per the module's `:edit` permission. There's no cross-module linking yet
+  (e.g. approving a Purchase Order doesn't auto-create an Accounts voucher or adjust Stores
+  quantities).
 - No real authentication - group/permission gating (RBAC) is real and enforced in the UI, but
   "who you are" is a client-side "switch user" menu, not a login. The Apps Script Web App is
   also reachable by anyone with its URL (see the limitations note in

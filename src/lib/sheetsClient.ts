@@ -10,7 +10,14 @@
 
 import { getEffectiveExecUrl, getRuntimeConfig } from './runtimeConfig'
 
-export type SheetName = 'Specifications' | 'Documents' | 'CheckSheets'
+export type SheetName =
+  | 'Specifications'
+  | 'Documents'
+  | 'CheckSheets'
+  | 'PurchaseOrders'
+  | 'StoreItems'
+  | 'AccountVouchers'
+  | 'LedgerAccounts'
 
 export function isConfigured() {
   return Boolean(getEffectiveExecUrl())

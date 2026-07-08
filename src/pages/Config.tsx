@@ -11,16 +11,14 @@ const REPO_URL = 'https://github.com/neurolooom-eng/Bestcast'
 
 type CheckResult = { status: 'idle' | 'checking' | 'ok' | 'error'; message?: string; count?: number }
 
-const SHEET_KEYS = ['Specifications', 'Documents', 'CheckSheets'] as const
+const SHEET_KEYS = Object.keys(DEFAULT_TAB_NAMES) as (keyof typeof DEFAULT_TAB_NAMES)[]
 
 export function Config() {
   const [form, setForm] = useState<RuntimeConfig>(getRuntimeConfig)
   const [saved, setSaved] = useState(false)
-  const [checks, setChecks] = useState<Record<(typeof SHEET_KEYS)[number], CheckResult>>({
-    Specifications: { status: 'idle' },
-    Documents: { status: 'idle' },
-    CheckSheets: { status: 'idle' },
-  })
+  const [checks, setChecks] = useState<Record<(typeof SHEET_KEYS)[number], CheckResult>>(
+    Object.fromEntries(SHEET_KEYS.map((key) => [key, { status: 'idle' }])) as Record<(typeof SHEET_KEYS)[number], CheckResult>,
+  )
 
   const envDefault = import.meta.env.VITE_SHEETS_API_URL
   const effectiveUrl = getEffectiveExecUrl()

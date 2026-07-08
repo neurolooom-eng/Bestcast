@@ -1,4 +1,16 @@
-import { ClipboardList, FileText, LayoutDashboard, Ruler, Settings, ShieldCheck, Wrench } from 'lucide-react'
+import {
+  BookText,
+  ClipboardList,
+  FileText,
+  LayoutDashboard,
+  Package,
+  Receipt,
+  Ruler,
+  Settings,
+  ShieldCheck,
+  ShoppingCart,
+  Wrench,
+} from 'lucide-react'
 import type { Permission } from '../../types/access'
 
 export interface NavItem {
@@ -29,6 +41,20 @@ export const NAV: NavGroup[] = [
   {
     label: 'Production',
     items: [{ to: '/check-sheets', label: 'Process Check Sheets', icon: ClipboardList, permission: 'checksheets:view' }],
+  },
+  {
+    label: 'Supply Chain',
+    items: [
+      { to: '/purchase', label: 'Purchase', icon: ShoppingCart, permission: 'purchase:view' },
+      { to: '/stores', label: 'Stores', icon: Package, permission: 'stores:view' },
+    ],
+  },
+  {
+    label: 'Finance',
+    items: [
+      { to: '/accounts', label: 'Accounts', icon: Receipt, permission: 'accounts:view' },
+      { to: '/ledgers', label: 'Ledgers', icon: BookText, permission: 'ledgers:view' },
+    ],
   },
   {
     label: 'Admin',

@@ -10,6 +10,10 @@ export const DEFAULT_TAB_NAMES = {
   Specifications: 'Specifications',
   Documents: 'Documents',
   CheckSheets: 'CheckSheets',
+  PurchaseOrders: 'PurchaseOrders',
+  StoreItems: 'StoreItems',
+  AccountVouchers: 'AccountVouchers',
+  LedgerAccounts: 'LedgerAccounts',
 } as const
 
 export interface RuntimeConfig {

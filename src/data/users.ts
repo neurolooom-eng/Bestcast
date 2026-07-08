@@ -10,5 +10,8 @@ export const USERS: User[] = [
   { id: 'user-naveen', name: 'Naveen', email: 'naveen@bestcastgroup.com', groupId: 'group-shift-supervisor' },
   { id: 'user-ashok', name: 'Ashok', email: 'ashok@bestcastgroup.com', groupId: 'group-shift-supervisor' },
   { id: 'user-ravi', name: 'Ravi Kumar', email: 'ravi.kumar@bestcastgroup.com', groupId: 'group-operator' },
+  { id: 'user-suresh-p', name: 'Suresh Kumar', email: 'suresh.kumar@bestcastgroup.com', groupId: 'group-purchase-officer' },
+  { id: 'user-ganesh', name: 'Ganesh', email: 'ganesh@bestcastgroup.com', groupId: 'group-store-keeper' },
+  { id: 'user-lakshmi', name: 'Lakshmi', email: 'lakshmi@bestcastgroup.com', groupId: 'group-accountant' },
   { id: 'user-auditor', name: 'External Auditor', email: 'auditor@bestcastgroup.com', groupId: 'group-viewer' },
 ]

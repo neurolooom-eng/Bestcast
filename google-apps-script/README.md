@@ -6,7 +6,7 @@ keeps the whole stack free to run and host on GitHub Pages.
 
 ## 1. Create the spreadsheet
 
-Create a new Google Sheet with **three tabs**, named exactly as below, each
+Create a new Google Sheet with **seven tabs**, named exactly as below, each
 with a header row (row 1) with these exact column names:
 
 ### `Specifications`
@@ -32,6 +32,33 @@ The last five `CheckSheets` columns (`readings`, `machineReadings`,
 value - the frontend serialises/parses these before sending or after
 receiving (see `NESTED_FIELDS` in `src/data/repository.ts`). Leave them as
 plain text cells in Sheets.
+
+### `PurchaseOrders`
+
+```
+id  poNumber  vendorName  category  itemDescription  quantity  unit  unitPrice  orderDate  expectedDeliveryDate  status  requestedBy
+```
+
+### `StoreItems`
+
+```
+id  itemCode  itemName  category  unitOfMeasure  quantityInStock  reorderLevel  unitCost  location  lastUpdated
+```
+
+### `AccountVouchers`
+
+```
+id  voucherNo  type  party  amount  voucherDate  dueDate  status  paymentMode  reference
+```
+
+### `LedgerAccounts`
+
+```
+id  accountCode  accountName  group  openingBalance  debit  credit  asOfDate
+```
+
+These four are flat records (no JSON-text columns) - unlike `CheckSheets`,
+they go through the Sheets API as plain rows.
 
 You can seed the sheets with the data already in `src/data/*.ts` (export
 those arrays as CSV, or leave the tabs empty to start recording live).

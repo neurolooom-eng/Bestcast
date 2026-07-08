@@ -3,13 +3,17 @@ import { AppLayout } from './components/layout/AppLayout'
 import { RequirePermission } from './components/RequirePermission'
 import { AccessProvider } from './context/AccessContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { Accounts } from './pages/Accounts'
 import { Admin } from './pages/Admin'
 import { CheckSheets } from './pages/CheckSheets'
 import { Config } from './pages/Config'
 import { Dashboard } from './pages/Dashboard'
 import { Documents } from './pages/Documents'
+import { Ledgers } from './pages/Ledgers'
+import { Purchase } from './pages/Purchase'
 import { Settings } from './pages/Settings'
 import { Specifications } from './pages/Specifications'
+import { Stores } from './pages/Stores'
 
 function App() {
   return (
@@ -22,6 +26,38 @@ function App() {
               <Route path="documents" element={<Documents />} />
               <Route path="specifications" element={<Specifications />} />
               <Route path="check-sheets" element={<CheckSheets />} />
+              <Route
+                path="purchase"
+                element={
+                  <RequirePermission permission="purchase:view">
+                    <Purchase />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="stores"
+                element={
+                  <RequirePermission permission="stores:view">
+                    <Stores />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="accounts"
+                element={
+                  <RequirePermission permission="accounts:view">
+                    <Accounts />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="ledgers"
+                element={
+                  <RequirePermission permission="ledgers:view">
+                    <Ledgers />
+                  </RequirePermission>
+                }
+              />
               <Route path="settings" element={<Settings />} />
               <Route
                 path="admin"
