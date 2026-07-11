@@ -232,7 +232,9 @@ src/
                  Ledgers, Settings, Admin, Config
   styles/        themes.css (token definitions per theme)
 docs/
-  DESIGN_DEFAULTS.md   The design-system spec this app implements
+  DESIGN_DEFAULTS.md                    The design-system spec this app implements
+  PURCHASE_MODULE_DESIGN_DEFAULTS.md    Purchase module spec (MR/PO data model, form, print)
+  PREFERENCES.md                        Git / backend / Admin / access & pages conventions
 google-apps-script/
   Code.gs, README.md  The Google Sheets backend + its setup guide
 scripts/
